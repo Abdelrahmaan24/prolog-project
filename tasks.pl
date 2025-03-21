@@ -57,37 +57,27 @@ most_successful_team_helper(MostSuccessfulTeam, _, MostSuccessfulTeam).
 num_matches_of_team(Team, Count) :-
     num_matches_of_team_helper(Team, 0, Count).
 
-% Helper predicate with accumulator
 num_matches_of_team_helper(Team, Acc, Count) :-
-    match(Team, _, _, _),          % Check if the team participated as Team1
-    NewAcc is Acc + 1,             % Increment the count
-    num_matches_of_team_helper(Team, NewAcc, Count). % Recursively count the remaining matches
+    match(Team, _, _, _),
+    NewAcc is Acc + 1,
+    num_matches_of_team_helper(Team, NewAcc, Count).
 num_matches_of_team_helper(Team, Acc, Count) :-
-    match(_, Team, _, _),          % Check if the team participated as Team2
-    NewAcc is Acc + 1,             % Increment the count
-    num_matches_of_team_helper(Team, NewAcc, Count). % Recursively count the remaining matches
-num_matches_of_team_helper(_, Count, Count). % Base case: return the accumulator
-
+    match(_, Team, _, _),
+    NewAcc is Acc + 1,
+    num_matches_of_team_helper(Team, NewAcc, Count).
+num_matches_of_team_helper(_, Count, Count).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
  %task 6
 
-% Main predicate to find the top goal scorer
 top_scorer(Player) :-
-    goals(FirstPlayer, FirstGoals), % Start with the first player
+    goals(FirstPlayer, FirstGoals),
     top_scorer_helper(FirstPlayer, FirstGoals, Player).
 
-% Helper predicate with accumulator
 top_scorer_helper(CurrentPlayer, CurrentGoals, TopScorer) :-
-    goals(NextPlayer, NextGoals),   % Find the next player
-    NextGoals > CurrentGoals,       % Check if the next player has more goals
-    top_scorer_helper(NextPlayer, NextGoals, TopScorer). % Update the accumulator
-top_scorer_helper(TopScorer, _, TopScorer). % Base case: return the top scorer
-
-
-
-
-
-
+    goals(NextPlayer, NextGoals),
+    NextGoals > CurrentGoals,
+    top_scorer_helper(NextPlayer, NextGoals, TopScorer).
+top_scorer_helper(TopScorer, _, TopScorer).
