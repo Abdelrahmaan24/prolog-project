@@ -48,24 +48,43 @@ most_successful_team_helper(CurrentTeam, CurrentTitles, MostSuccessfulTeam) :-
     most_successful_team_helper(NextTeam, NextTitles, MostSuccessfulTeam).
 most_successful_team_helper(MostSuccessfulTeam, _, MostSuccessfulTeam).
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%task 4
+matches_of_team(Team, Matches) :-
+    collect_matches(Team, [], Matches).
+
+collect_matches(Team, Acc, Matches) :-
+    match(Team, Opponent, Goals1, Goals2),  % Team is Team1
+    \+ member((Team, Opponent, Goals1, Goals2), Acc),  % Avoid duplicates
+    collect_matches(Team, [(Team, Opponent, Goals1, Goals2) | Acc], Matches).
+
+collect_matches(Team, Acc, Matches) :-
+    match(Opponent, Team, Goals1, Goals2),  % Team is Team2
+    \+ member((Opponent, Team, Goals1, Goals2), Acc),  % Avoid duplicates
+    collect_matches(Team, [(Opponent, Team, Goals1, Goals2) | Acc], Matches).
+
+collect_matches(_, Matches, Matches).  % Base case: return collected list
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
  %task 5   still have problem
-
 num_matches_of_team(Team, Count) :-
-    num_matches_of_team_helper(Team, 0, Count).
+    count_matches(Team, 0, Count, []).
 
-num_matches_of_team_helper(Team, Acc, Count) :-
-    match(Team, _, _, _),
+count_matches(Team, Acc, Count, Seen) :-
+    match(Team, Opponent, _, _),  % Team appears as Team1
+    \+ member((Team, Opponent), Seen),  % Avoid duplicate counting
     NewAcc is Acc + 1,
-    num_matches_of_team_helper(Team, NewAcc, Count).
-num_matches_of_team_helper(Team, Acc, Count) :-
-    match(_, Team, _, _),
+    count_matches(Team, NewAcc, Count, [(Team, Opponent) | Seen]).
+
+count_matches(Team, Acc, Count, Seen) :-
+    match(Opponent, Team, _, _),  % Team appears as Team2
+    \+ member((Opponent, Team), Seen),  % Avoid duplicate counting
     NewAcc is Acc + 1,
-    num_matches_of_team_helper(Team, NewAcc, Count).
-num_matches_of_team_helper(_, Count, Count).
+    count_matches(Team, NewAcc, Count, [(Opponent, Team) | Seen]).
+
+count_matches(_, Count, Count, _).  % Base case: return final count
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
